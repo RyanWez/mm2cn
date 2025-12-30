@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Languages, Gift, QrCode, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ interface SidebarProps {
   onMobileClose?: () => void;
 }
 
-export function Sidebar({
+export const Sidebar = memo(function Sidebar({
   onTranslateClick,
   onQRCodeClick,
   currentMode = "translate",
@@ -120,9 +120,9 @@ export function Sidebar({
                   <Gift className="h-5 w-5 flex-shrink-0" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent 
-                side="right" 
-                align="center" 
+              <PopoverContent
+                side="right"
+                align="center"
                 sideOffset={16}
                 className="w-48 p-2 animate-in fade-in-0 zoom-in-95 slide-in-from-left-2 duration-200"
               >
@@ -218,4 +218,4 @@ export function Sidebar({
       </Sheet>
     </>
   );
-}
+});

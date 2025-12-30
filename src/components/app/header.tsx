@@ -1,7 +1,7 @@
 "use client";
 
 import { Languages, QrCode, Menu, PanelLeftOpen, PanelLeftClose } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, memo } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
 interface HeaderProps {
@@ -12,7 +12,7 @@ interface HeaderProps {
   rightContent?: ReactNode;
 }
 
-export function Header({ isCollapsed, onToggle, onMobileMenuToggle, mode = "translate", rightContent }: HeaderProps) {
+export const Header = memo(function Header({ isCollapsed, onToggle, onMobileMenuToggle, mode = "translate", rightContent }: HeaderProps) {
   const isQRMode = mode === "qrcode";
   const Icon = isQRMode ? QrCode : Languages;
   const title = isQRMode ? "QR Code Generator" : "Myanmar-Chinese Chat Assistant";
@@ -55,11 +55,11 @@ export function Header({ isCollapsed, onToggle, onMobileMenuToggle, mode = "tran
           </h1>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <ThemeToggle />
         {rightContent}
       </div>
     </header>
   );
-}
+});

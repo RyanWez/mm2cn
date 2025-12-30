@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useCallback, useMemo } from "react";
 import { Translator } from "@/components/app/translator";
 import { Sidebar } from "@/components/app/sidebar";
 import { Header } from "@/components/app/header";
@@ -25,28 +25,36 @@ export default function TranslatePage() {
     setIsSidebarCollapsed(savedCollapsed);
   }, []);
 
-  const handleTranslateClick = () => {
+  const handleTranslateClick = useCallback(() => {
     // Already on translate page, do nothing
-  };
+  }, []);
 
-  const handleQRCodeClick = () => {
+  const handleQRCodeClick = useCallback(() => {
     startTransition(() => {
       router.push("/qrcode");
     });
-  };
+  }, [router]);
 
-  const handleSidebarToggle = (collapsed: boolean) => {
+  const handleSidebarToggle = useCallback((collapsed: boolean) => {
     setIsSidebarCollapsed(collapsed);
     setSidebarCollapsed(collapsed);
-  };
+  }, []);
 
-  const handleMobileMenuToggle = () => {
-    setIsMobileSidebarOpen(!isMobileSidebarOpen);
-  };
+  const handleMobileMenuToggle = useCallback(() => {
+    setIsMobileSidebarOpen(prev => !prev);
+  }, []);
 
-  const handleMobileSidebarClose = () => {
+  const handleMobileSidebarClose = useCallback(() => {
     setIsMobileSidebarOpen(false);
-  };
+  }, []);
+
+  const historyContent = useMemo(() => (
+    <TranslationHistory
+      uid={uid}
+      onSelectTranslation={handleSelectFromHistory}
+      refreshTrigger={historyRefreshTrigger}
+    />
+  ), [uid, handleSelectFromHistory, historyRefreshTrigger]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -66,13 +74,7 @@ export default function TranslatePage() {
           onToggle={handleSidebarToggle}
           onMobileMenuToggle={handleMobileMenuToggle}
           mode="translate"
-          rightContent={
-            <TranslationHistory
-              uid={uid}
-              onSelectTranslation={handleSelectFromHistory}
-              refreshTrigger={historyRefreshTrigger}
-            />
-          }
+          rightContent={historyContent}
         />
 
         <main className="flex-1 p-4 sm:p-6 overflow-auto">

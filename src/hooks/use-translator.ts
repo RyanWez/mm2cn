@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   saveTranslationHistory,
   findTranslationInHistory,
@@ -27,7 +27,7 @@ export function useTranslator() {
     // Get or create user ID
     const userId = getUserId();
     setUid(userId);
-    
+
     // Check initial cooldown
     const remaining = checkCooldown();
     if (remaining > 0) {
@@ -41,7 +41,7 @@ export function useTranslator() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  const handleTranslate = async () => {
+  const handleTranslate = useCallback(async () => {
     const trimmedInput = inputText.trim();
     if (!trimmedInput || isLoading || cooldown > 0 || !uid) return;
 
@@ -93,14 +93,14 @@ export function useTranslator() {
 
       let fullResponse = "";
       let firstChunkReceived = false;
-      
+
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        
+
         const decodedChunk = decoder.decode(value, { stream: true });
         fullResponse += decodedChunk;
-        
+
         // Smooth transition from loading to streaming
         if (!firstChunkReceived) {
           firstChunkReceived = true;
@@ -109,7 +109,7 @@ export function useTranslator() {
           setIsLoading(false);
           setIsStreaming(true);
         }
-        
+
         // Stream the text directly to UI
         setTranslation((prev) => prev + decodedChunk);
         finalTranslationRef.current += decodedChunk;
@@ -141,15 +141,15 @@ export function useTranslator() {
       setIsLoading(false);
       setIsStreaming(false);
     }
-  };
+  }, [inputText, isLoading, cooldown, uid]);
 
   const isTranslateDisabled = isLoading || !inputText.trim() || cooldown > 0;
 
-  const handleSelectFromHistory = (original: string, translated: string) => {
+  const handleSelectFromHistory = useCallback((original: string, translated: string) => {
     setInputText(original);
     setTranslation(translated);
     finalTranslationRef.current = translated;
-  };
+  }, []);
 
   return {
     inputText,
