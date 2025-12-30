@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Upload, Image as ImageIcon, Circle, Square, Hexagon } from "lucide-react";
+import { X, Upload, Image as ImageIcon, Circle, Square, Hexagon, ChevronDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 

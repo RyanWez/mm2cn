@@ -1,7 +1,7 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
+import { motion, AnimatePresence } from "framer-motion";
+import { QrCode } from "lucide-react";
 import { QRCodeState } from "./types";
 
 interface QRPreviewProps {
@@ -137,23 +137,62 @@ export function QRPreview({ state, qrValue }: QRPreviewProps) {
     }
   };
 
-  if (!qrValue) {
-    return (
-      <div className="flex items-center justify-center h-[250px] sm:h-[300px] bg-muted/30 rounded-lg border-2 border-dashed border-muted-foreground/25">
-        <p className="text-muted-foreground text-xs sm:text-sm text-center px-4">
-          Enter content to generate QR code
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative flex items-center justify-center p-4 sm:p-8 rounded-lg bg-white">
-      <canvas
-        ref={canvasRef}
-        id="qr-code-canvas"
-        className="max-w-full h-auto"
-      />
+    <div className="relative flex flex-col items-center justify-center">
+      {/* Card styling */}
+      <div className="relative w-full aspect-square max-w-[340px] bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden border border-zinc-100 dark:border-zinc-800">
+
+        {/* Glossy overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none z-10" />
+
+        <AnimatePresence mode="wait">
+          {!qrValue ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="text-center p-6 space-y-4"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center mx-auto text-indigo-500">
+                <QrCode className="w-8 h-8 opacity-50" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  Ready to Generate
+                </p>
+                <p className="text-xs text-muted-foreground max-w-[180px] mx-auto">
+                  Enter your content to see the QR code appear here instantly.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="qr"
+              initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+              className="p-6 bg-white rounded-xl"
+            >
+              <canvas
+                ref={canvasRef}
+                id="qr-code-canvas"
+                className="max-w-full h-auto shadow-sm"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {qrValue && (
+        <motion.p
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 text-xs font-medium text-muted-foreground uppercase tracking-widest"
+        >
+          Scan Me
+        </motion.p>
+      )}
     </div>
   );
 }
