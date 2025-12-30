@@ -4,9 +4,12 @@ const RATE_LIMIT_WINDOW = 60; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 20; // 20 requests per minute
 
 export async function checkRateLimit(ip: string): Promise<{ success: boolean; reset: number; remaining: number }> {
-    // If KV is not configured, we might want to fallback to memory or just allow
-    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-        console.warn("KV Access not configured, rate limiting disabled (fallback to basic)");
+    // Support both Vercel KV and standard Upstash env vars
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (!url || !token) {
+        console.warn("KV/Upstash Access not configured, rate limiting disabled (fallback to basic)");
         return { success: true, reset: 0, remaining: 100 };
     }
 
