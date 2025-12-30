@@ -46,6 +46,7 @@ export function InputArea({
           <Input
             id="url-input"
             type="url"
+            maxLength={2000}
             placeholder="https://example.com"
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
@@ -67,13 +68,14 @@ export function InputArea({
           <Textarea
             ref={textareaRef}
             id="text-input"
+            maxLength={2500}
             placeholder="Type your text here..."
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
             className="w-full min-h-[120px] bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all p-4 text-sm resize-none"
           />
           <div className="absolute bottom-3 right-3 text-xs text-muted-foreground bg-white/80 dark:bg-zinc-800/80 px-2 py-1 rounded-md backdrop-blur-sm">
-            {content.length} chars
+            {content.length}/2500 chars
           </div>
         </div>
       </motion.div>
@@ -91,6 +93,7 @@ export function InputArea({
           <Label htmlFor="wifi-ssid" className="text-xs text-muted-foreground ml-1">Network Name</Label>
           <Input
             id="wifi-ssid"
+            maxLength={32}
             placeholder="My WiFi Network"
             value={wifiData.ssid}
             onChange={(e) =>
@@ -106,6 +109,7 @@ export function InputArea({
             <Input
               id="wifi-password"
               type="password"
+              maxLength={63}
               placeholder="Enter password"
               value={wifiData.password}
               onChange={(e) =>

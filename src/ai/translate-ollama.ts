@@ -2,6 +2,9 @@
 
 import { Ollama } from "ollama";
 import { kv } from "@vercel/kv";
+import { headers } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limit";
+import "@/env"; // Trigger env validation
 
 if (!process.env.OLLAMA_API_KEY) {
     throw new Error("OLLAMA_API_KEY is not set in environment variables");
@@ -31,7 +34,7 @@ interface TranslateCustomerQueryInput {
 
 // ✅ Unified Cache Manager
 class CacheManager {
-    private isKVAvailable = () => 
+    private isKVAvailable = () =>
         !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
     async get<T>(key: string): Promise<T | null> {
@@ -273,6 +276,15 @@ export async function translateCustomerQueryOllama(
 
     if (!query?.trim() || !uid) {
         return streamFromString("Error: Invalid input");
+    }
+
+    // ✅ IP-Based Rate Limiting
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for") || "127.0.0.1";
+    const { success: limitSuccess } = await checkRateLimit(ip);
+
+    if (!limitSuccess) {
+        return streamFromString("Error: Rate limit exceeded. Please wait.");
     }
 
     const sourceText = query.trim();
