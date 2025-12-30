@@ -15,8 +15,9 @@ export default function TranslatePage() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  
-  const { uid, historyRefreshTrigger, handleSelectFromHistory } = useTranslator();
+
+  const translatorState = useTranslator();
+  const { uid, historyRefreshTrigger, handleSelectFromHistory } = translatorState;
 
   // Restore sidebar state from localStorage on mount
   useEffect(() => {
@@ -57,12 +58,11 @@ export default function TranslatePage() {
         isMobileOpen={isMobileSidebarOpen}
         onMobileClose={handleMobileSidebarClose}
       />
-      
-      <div className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
-        isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-      }`}>
-        <Header 
-          isCollapsed={isSidebarCollapsed} 
+
+      <div className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+        }`}>
+        <Header
+          isCollapsed={isSidebarCollapsed}
           onToggle={handleSidebarToggle}
           onMobileMenuToggle={handleMobileMenuToggle}
           mode="translate"
@@ -74,7 +74,7 @@ export default function TranslatePage() {
             />
           }
         />
-        
+
         <main className="flex-1 p-4 sm:p-6 overflow-auto">
           <PageTransition mode="translate">
             <div className="max-w-4xl mx-auto">
@@ -83,7 +83,21 @@ export default function TranslatePage() {
                   AI-powered translation for customer service chats.
                 </p>
               </div>
-              <Translator />
+              <Translator
+                inputText={translatorState.inputText}
+                setInputText={translatorState.setInputText}
+                translation={translatorState.translation}
+                isLoading={translatorState.isLoading}
+                isStreaming={translatorState.isStreaming}
+                error={translatorState.error}
+                cooldown={translatorState.cooldown}
+                handleTranslate={translatorState.handleTranslate}
+                isTranslateDisabled={translatorState.isTranslateDisabled}
+                finalTranslationRef={translatorState.finalTranslationRef}
+                uid={translatorState.uid}
+                historyRefreshTrigger={translatorState.historyRefreshTrigger}
+                handleSelectFromHistory={translatorState.handleSelectFromHistory}
+              />
             </div>
           </PageTransition>
         </main>

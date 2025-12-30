@@ -8,28 +8,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useTranslator } from "@/hooks/use-translator";
+
 import { TranslationInput } from "./translator/TranslationInput";
 import { TranslationOutput } from "./translator/TranslationOutput";
 import { TranslateButton } from "./translator/TranslateButton";
 import { ErrorAlert } from "./translator/ErrorAlert";
 
-export function Translator() {
-  const {
-    inputText,
-    setInputText,
-    translation,
-    isLoading,
-    isStreaming,
-    error,
-    cooldown,
-    handleTranslate,
-    isTranslateDisabled,
-    finalTranslationRef,
-    uid,
-    historyRefreshTrigger,
-    handleSelectFromHistory,
-  } = useTranslator();
+interface TranslatorProps {
+  inputText: string;
+  setInputText: (text: string) => void;
+  translation: string;
+  isLoading: boolean;
+  isStreaming: boolean;
+  error: string;
+  cooldown: number;
+  handleTranslate: () => void;
+  isTranslateDisabled: boolean;
+  finalTranslationRef: React.MutableRefObject<string>;
+  uid: string | null;
+  historyRefreshTrigger: number;
+  handleSelectFromHistory: (original: string, translated: string) => void;
+}
+
+export function Translator({
+  inputText,
+  setInputText,
+  translation,
+  isLoading,
+  isStreaming,
+  error,
+  cooldown,
+  handleTranslate,
+  isTranslateDisabled,
+  finalTranslationRef,
+}: TranslatorProps) {
 
   return (
     <motion.div
