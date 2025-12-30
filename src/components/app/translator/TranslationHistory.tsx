@@ -8,13 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Accordion,
   AccordionContent,
@@ -47,25 +47,25 @@ export function TranslationHistory({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
-  
-  const itemsPerPage = 10;
+
+  const itemsPerPage = 5; // Reduced for dialog view
 
   const fetchHistory = useCallback(async (page: number = 1) => {
     if (!uid) return;
-    
+
     setIsLoading(true);
     setError("");
-    
+
     try {
       const allHistory = getTranslationHistory();
-      
+
       const historyWithIds = allHistory.map((item, index) => ({
         ...item,
         id: `history-${index}-${item.createdAt.getTime()}`,
       }));
-      
+
       setTotalCount(historyWithIds.length);
-      
+
       const startIndex = (page - 1) * itemsPerPage;
       const paginatedHistory = historyWithIds.slice(startIndex, startIndex + itemsPerPage);
       setHistory(paginatedHistory);
@@ -84,16 +84,16 @@ export function TranslationHistory({
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return "Just now";
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours}h ago`;
-    
+
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 7) return `${diffInDays}d ago`;
-    
+
     return date.toLocaleDateString();
   };
 
@@ -111,7 +111,7 @@ export function TranslationHistory({
         document.execCommand("copy");
         document.body.removeChild(textArea);
       }
-      
+
       setCopiedStates(prev => ({ ...prev, [key]: true }));
       setTimeout(() => {
         setCopiedStates(prev => ({ ...prev, [key]: false }));
@@ -139,8 +139,8 @@ export function TranslationHistory({
   if (!uid) return null;
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button
           variant="outline"
           size="icon"
@@ -149,18 +149,18 @@ export function TranslationHistory({
         >
           <History className="h-5 w-5" />
           {totalCount > 0 && (
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px]"
             >
               {totalCount > 99 ? "99+" : totalCount}
             </Badge>
           )}
         </Button>
-      </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-2xl lg:max-w-3xl">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
+      </DialogTrigger>
+      <DialogContent className="w-full max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-primary" />
             Translation History
             {totalCount > 0 && (
@@ -168,13 +168,13 @@ export function TranslationHistory({
                 {totalCount}
               </Badge>
             )}
-          </SheetTitle>
-          <SheetDescription>
+          </DialogTitle>
+          <DialogDescription>
             View and reuse your previous translations
-          </SheetDescription>
-        </SheetHeader>
-        
-        <div className="mt-6">
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -192,7 +192,7 @@ export function TranslationHistory({
             </div>
           ) : (
             <>
-              <ScrollArea className="h-[calc(100vh-250px)] pr-4">
+              <ScrollArea className="h-[60vh] pr-4">
                 <motion.div
                   key={`page-${currentPage}`}
                   className="space-y-4"
@@ -293,7 +293,7 @@ export function TranslationHistory({
                   </Accordion>
                 </motion.div>
               </ScrollArea>
-              
+
               {totalCount > 0 && (
                 <>
                   <Separator className="my-4" />
@@ -310,7 +310,7 @@ export function TranslationHistory({
                       Refresh
                     </Button>
                   </div>
-                  
+
                   {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-3">
                       <Button
@@ -322,7 +322,7 @@ export function TranslationHistory({
                       >
                         Previous
                       </Button>
-                      
+
                       <div className="flex items-center gap-1">
                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                           let pageNum;
@@ -335,7 +335,7 @@ export function TranslationHistory({
                           } else {
                             pageNum = currentPage - 2 + i;
                           }
-                          
+
                           return (
                             <Button
                               key={pageNum}
@@ -349,7 +349,7 @@ export function TranslationHistory({
                           );
                         })}
                       </div>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -366,7 +366,7 @@ export function TranslationHistory({
             </>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
