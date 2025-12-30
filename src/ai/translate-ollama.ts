@@ -327,7 +327,7 @@ export async function translateCustomerQueryOllama(
 
         const response = await retryWithBackoff(() =>
             ollama.chat({
-                model: "deepseek-v3.1:671b-cloud",
+                model: "gemini-3-flash-preview",
                 messages: [{ role: "user", content: prompt }],
                 stream: true,
             })
